@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz — Êtes-vous prêt(e) pour la nationalité française ?</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bleu: #002395; --rouge: #ED2939; --blanc: #FFFFFF;
+    --creme: #FBF8F3; --encre: #1A1A2E; --gris: #6B6B7A;
+    --gris-clair: #EBEBED; --vert: #1D9E75; --vert-clair: #E6F7F1;
+    --rouge-clair: #FDECEE; --r: 14px;
+  }
+  body { font-family: 'DM Sans', sans-serif; background: var(--creme); color: var(--encre); min-height: 100vh; }
+  .bandeau { display: flex; height: 8px; }
+  .bandeau-bleu { background: var(--bleu); flex: 1; }
+  .bandeau-blanc { background: var(--blanc); flex: 1; border-left: 1px solid #e0ddd6; border-right: 1px solid #e0ddd6; }
+  .bandeau-rouge { background: var(--rouge); flex: 1; }
+  .hero { background: var(--bleu); color: #fff; padding: 3rem 1.5rem 3.5rem; text-align: center; position: relative; overflow: hidden; }
+  .hero::before { content: ''; position: absolute; top: -60px; right: -60px; width: 220px; height: 220px; border-radius: 50%; background: rgba(255,255,255,0.05); }
+  .hero::after { content: ''; position: absolute; bottom: -80px; left: -40px; width: 280px; height: 280px; border-radius: 50%; background: rgba(237,41,57,0.12); }
+  .hero-badge { display: inline-block; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); border-radius: 99px; font-size: 12px; font-weight: 500; letter-spacing: 0.08em; padding: 5px 14px; margin-bottom: 1.25rem; text-transform: uppercase; }
+  .hero h1 { font-family: 'Fraunces', serif; font-size: clamp(26px, 5vw, 42px); font-weight: 600; line-height: 1.2; margin-bottom: 0.75rem; position: relative; z-index: 1; }
+  .hero h1 em { font-style: italic; color: #FAC775; }
+  .hero-sub { font-size: 15px; opacity: 0.8; max-width: 420px; margin: 0 auto 1.5rem; line-height: 1.6; position: relative; z-index: 1; }
+  .hero-meta { display: flex; justify-content: center; gap: 1.5rem; font-size: 13px; opacity: 0.7; position: relative; z-index: 1; }
+  .hero-meta span::before { content: '● '; font-size: 8px; vertical-align: middle; }
+  .container { max-width: 660px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+  .progress-wrap { margin-bottom: 1.75rem; }
+  .progress-top { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px; }
+  .progress-label { font-size: 13px; color: var(--gris); }
+  .progress-count { font-size: 13px; font-weight: 500; color: var(--encre); }
+  .progress-track { background: var(--gris-clair); border-radius: 99px; height: 5px; overflow: hidden; }
+  .progress-fill { background: var(--bleu); height: 5px; border-radius: 99px; transition: width 0.5s cubic-bezier(0.4,0,0.2,1); }
+  .card { background: var(--blanc); border-radius: var(--r); border: 1px solid #E8E5DE; padding: 1.75rem; margin-bottom: 1rem; animation: slideUp 0.3s ease both; }
+  @keyframes slideUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+  .theme-tag { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase; padding: 3px 10px; border-radius: 99px; margin-bottom: 1rem; }
+  .tag-histoire { background: #EEF0FD; color: #3540A0; }
+  .tag-institutions { background: #E6F7F1; color: #0F6E56; }
+  .tag-geo { background: #FEF6E7; color: #854F0B; }
+  .tag-culture { background: #FDECEE; color: #993556; }
+  .question-num { font-size: 12px; color: var(--gris); margin-bottom: 6px; }
+  .question-text { font-family: 'Fraunces', serif; font-size: clamp(17px, 3vw, 20px); font-weight: 400; line-height: 1.45; color: var(--encre); margin-bottom: 1.5rem; }
+  .options { display: flex; flex-direction: column; gap: 8px; }
+  .opt { display: flex; align-items: center; gap: 12px; padding: 13px 16px; border-radius: 10px; border: 1.5px solid #E8E5DE; background: var(--blanc); cursor: pointer; text-align: left; font-family: 'DM Sans', sans-serif; font-size: 15px; color: var(--encre); transition: border-color 0.15s, background 0.15s, transform 0.1s; width: 100%; }
+  .opt:hover:not(:disabled) { border-color: var(--bleu); background: #F0F2FD; transform: translateX(2px); }
+  .opt:disabled { cursor: default; }
+  .opt-letter { width: 26px; height: 26px; border-radius: 50%; background: var(--gris-clair); color: var(--gris); font-size: 12px; font-weight: 500; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: background 0.15s, color 0.15s; }
+  .opt.correct { border-color: var(--vert); background: var(--vert-clair); }
+  .opt.correct .opt-letter { background: var(--vert); color: #fff; }
+  .opt.wrong { border-color: var(--rouge); background: var(--rouge-clair); }
+  .opt.wrong .opt-letter { background: var(--rouge); color: #fff; }
+  .opt.reveal { border-color: var(--vert); background: var(--vert-clair); }
+  .opt.reveal .opt-letter { background: var(--vert); color: #fff; }
+  .feedback { margin-top: 1rem; padding: 12px 14px; border-radius: 8px; font-size: 14px; line-height: 1.55; display: flex; gap: 8px; align-items: flex-start; }
+  .feedback.ok { background: var(--vert-clair); color: #0F6E56; }
+  .feedback.ko { background: var(--rouge-clair); color: #993C1D; }
+  .feedback-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+  .nav { display: flex; justify-content: space-between; align-items: center; padding: 0 0.25rem; }
+  .score-live { font-size: 14px; color: var(--gris); }
+  .score-live strong { color: var(--encre); }
+  .btn-next { background: var(--bleu); color: #fff; border: none; border-radius: 99px; padding: 11px 24px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; cursor: pointer; transition: background 0.15s, transform 0.1s; }
+  .btn-next:hover { background: #001A73; }
+  .btn-next:active { transform: scale(0.97); }
+  .results-hero { background: var(--bleu); color: #fff; border-radius: var(--r); padding: 2.5rem 2rem; text-align: center; margin-bottom: 1rem; position: relative; overflow: hidden; }
+  .results-hero::before { content: ''; position: absolute; top: -40px; right: -40px; width: 180px; height: 180px; border-radius: 50%; background: rgba(255,255,255,0.06); }
+  .results-hero-label { font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.6; margin-bottom: 0.5rem; }
+  .results-score { font-family: 'Fraunces', serif; font-size: 72px; font-weight: 600; line-height: 1; margin-bottom: 4px; }
+  .results-score span { font-size: 32px; opacity: 0.6; }
+  .results-pct { font-size: 15px; opacity: 0.75; margin-bottom: 1rem; }
+  .results-msg { font-size: 15px; line-height: 1.6; max-width: 380px; margin: 0 auto; opacity: 0.9; position: relative; z-index: 1; }
+  .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 1rem; }
+  .stat-box { background: var(--blanc); border: 1px solid #E8E5DE; border-radius: var(--r); padding: 1rem; text-align: center; }
+  .stat-num { font-family: 'Fraunces', serif; font-size: 28px; font-weight: 600; color: var(--encre); }
+  .stat-lbl { font-size: 12px; color: var(--gris); margin-top: 2px; }
+  .cat-card { background: var(--blanc); border: 1px solid #E8E5DE; border-radius: var(--r); padding: 1.5rem; margin-bottom: 1rem; }
+  .cat-card h3 { font-size: 13px; font-weight: 500; color: var(--gris); margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 0.06em; }
+  .cat-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .cat-name { font-size: 14px; color: var(--encre); width: 110px; flex-shrink: 0; }
+  .cat-track { flex: 1; background: var(--gris-clair); border-radius: 99px; height: 6px; overflow: hidden; }
+  .cat-fill { height: 6px; border-radius: 99px; transition: width 1s ease; }
+  .cat-score { font-size: 13px; font-weight: 500; color: var(--encre); width: 36px; text-align: right; flex-shrink: 0; }
+  .btn-restart { display: block; width: 100%; background: var(--bleu); color: #fff; border: none; border-radius: 99px; padding: 15px; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 500; cursor: pointer; transition: background 0.15s; margin-top: 1rem; }
+  .btn-restart:hover { background: #001A73; }
+</style>
+</head>
+<body>
+<div class="bandeau"><div class="bandeau-bleu"></div><div class="bandeau-blanc"></div><div class="bandeau-rouge"></div></div>
+<div class="hero">
+  <div class="hero-badge">Test de naturalisation</div>
+  <h1>Êtes-vous prêt(e) pour<br>la <em>nationalité française</em> ?</h1>
+  <p class="hero-sub">60 questions de culture générale issues des questionnaires officiels utilisés lors des tests de naturalisation.</p>
+  <div class="hero-meta"><span>60 questions</span><span>4 thèmes</span><span>Ordre aléatoire</span></div>
+</div>
+<div class="container"><div id="app"></div></div>
+<div class="bandeau"><div class="bandeau-bleu"></div><div class="bandeau-blanc"></div><div class="bandeau-rouge"></div></div>
+
+<script>
+const ALL_QUESTIONS=[
+  {q:"À quelle période se rattache la construction du Château de Versailles ?",opts:["Celle de Napoléon","Celle de Louis XIV","Celle de Louis-Philippe"],a:1,theme:"histoire",feedback:"Versailles fut construit sous Louis XIV, le Roi-Soleil, au XVIIe siècle."},
+  {q:"À qui associez-vous l'Arc de Triomphe à Paris ?",opts:["Napoléon","Le général de Gaulle","Jules César"],a:0,theme:"histoire",feedback:"L'Arc de Triomphe fut commandé par Napoléon après la victoire d'Austerlitz en 1805."},
+  {q:"Pendant quelle période ont été bâties les cathédrales gothiques ?",opts:["Le Moyen Âge","La Révolution française","L'Antiquité"],a:0,theme:"histoire",feedback:"L'architecture gothique s'est développée en France au cours du Moyen Âge (XIIe–XVe siècles)."},
+  {q:"Les châteaux de la Loire datent :",opts:["Du XXe siècle","De la Renaissance","De la Révolution française"],a:1,theme:"histoire",feedback:"Les grands châteaux de la Loire furent érigés à la Renaissance, aux XVe et XVIe siècles."},
+  {q:"À quoi servait la Bastille avant sa démolition ?",opts:["À un hôtel","À une prison","À un opéra"],a:1,theme:"histoire",feedback:"La Bastille était une forteresse-prison royale. Sa prise le 14 juillet 1789 marqua le début de la Révolution."},
+  {q:"La guerre de Cent Ans s'est déroulée :",opts:["Au Moyen Âge","Sous le règne de Louis XIV","En 1914"],a:0,theme:"histoire",feedback:"La guerre de Cent Ans (1337–1453) opposa la France et l'Angleterre au Moyen Âge."},
+  {q:"À quelle guerre fait référence la bataille de Verdun ?",opts:["La guerre d'Algérie","La Première Guerre mondiale","La Seconde Guerre mondiale"],a:1,theme:"histoire",feedback:"La bataille de Verdun (1916) est l'une des plus meurtrières de la Première Guerre mondiale."},
+  {q:"La Tour Eiffel a été construite :",opts:["Pour l'Exposition universelle de 1889","Pour attirer les touristes","Pour installer les antennes de télévision"],a:0,theme:"culture",feedback:"Gustave Eiffel l'a construite pour l'Exposition universelle de 1889, célébrant le centenaire de la Révolution."},
+  {q:"La Grande Mosquée de Paris a été inaugurée :",opts:["Avant la Révolution","Entre les deux guerres","L'année dernière"],a:1,theme:"histoire",feedback:"La Grande Mosquée de Paris a été inaugurée en 1926, entre les deux guerres mondiales."},
+  {q:"La Première Guerre mondiale s'est déroulée :",opts:["Entre 1914 et 1918","Entre 1946 et 1962","Entre 1720 et 1723"],a:0,theme:"histoire",feedback:"La Grande Guerre s'est déroulée de 1914 à 1918 et a causé des millions de victimes."},
+  {q:"Les guerres de religion au XVIe siècle ont opposé :",opts:["Catholiques et protestants","Chrétiens et musulmans","Écoles publiques et privées"],a:0,theme:"histoire",feedback:"Les guerres de religion (1562–1598) ont déchiré la France entre catholiques et protestants (huguenots)."},
+  {q:"Le discours du général de Gaulle appelant à la résistance se situe :",opts:["Dans le cadre de la Seconde Guerre mondiale","Dans le cadre de la guerre contre les Anglais","Pendant mai 1968"],a:0,theme:"histoire",feedback:"L'Appel du 18 juin 1940 invitait les Français à continuer le combat contre l'Allemagne nazie."},
+  {q:"Lequel de ces hommes n'a pas été Président de la République ?",opts:["Valéry Giscard d'Estaing","François Mitterrand","Victor Hugo"],a:2,theme:"institutions",feedback:"Victor Hugo était un grand écrivain et poète, pas un chef d'État."},
+  {q:"À quelle période se rattache la Déclaration des Droits de l'Homme et du Citoyen ?",opts:["La libération de Paris","La Révolution française","La création de l'Europe"],a:1,theme:"institutions",feedback:"La Déclaration des Droits de l'Homme et du Citoyen a été adoptée le 26 août 1789."},
+  {q:"À quelle période se rattache Jeanne d'Arc ?",opts:["Le Moyen Âge","La Deuxième Guerre mondiale","La Révolution française"],a:0,theme:"histoire",feedback:"Jeanne d'Arc (1412–1431) vécut au Moyen Âge et joua un rôle clé dans la guerre de Cent Ans."},
+  {q:"Le Mont-Saint-Michel est situé :",opts:["En Méditerranée","Sur une île de la Seine","En Normandie"],a:2,theme:"geo",feedback:"Le Mont-Saint-Michel est un îlot situé en Normandie, dans la baie du même nom."},
+  {q:"Au palais de l'Élysée loge :",opts:["Le ministre de la Justice","Le siège d'un groupe hôtelier","Le Président de la République"],a:2,theme:"institutions",feedback:"Le palais de l'Élysée est la résidence officielle du Président de la République française."},
+  {q:"L'hymne de la France est :",opts:["La Marseillaise","La Versaillaise","La Paimpolaise"],a:0,theme:"institutions",feedback:"La Marseillaise, composée en 1792, est l'hymne national de la République française."},
+  {q:"Notre-Dame de Paris est :",opts:["Un lieu de culte","Un bâtiment administratif","Une salle de concert"],a:0,theme:"culture",feedback:"Notre-Dame de Paris est une cathédrale catholique, chef-d'œuvre de l'art gothique."},
+  {q:"Dans lequel de ces pays le français n'est PAS parlé ?",opts:["La Suisse","L'Espagne","L'Algérie"],a:1,theme:"culture",feedback:"L'Espagne est un pays hispanophone. Le français est langue officielle en Suisse et largement parlé en Algérie."},
+  {q:"Le nom de la France provient :",opts:["Des Francs","De la franchise","De la langue française"],a:0,theme:"histoire",feedback:"Le nom « France » vient des Francs, peuple germanique qui conquit la Gaule au Ve siècle."},
+  {q:"Lequel de ces lieux est un musée ?",opts:["Le Louvre","Les Galeries Lafayette","Le Futuroscope de Poitiers"],a:0,theme:"culture",feedback:"Le Louvre est le plus grand musée du monde, situé à Paris, accueillant notamment la Joconde."},
+  {q:"Lequel de ces pays n'appartient pas à l'espace européen ?",opts:["L'Ukraine","Le Danemark","La Pologne"],a:0,theme:"geo",feedback:"L'Ukraine n'est pas membre de l'Union européenne, bien qu'elle ait entamé un processus d'adhésion."},
+  {q:"La loi est votée par :",opts:["Le Président de la République","L'Assemblée nationale et le Sénat","Les habitants de la France"],a:1,theme:"institutions",feedback:"Le Parlement, composé de l'Assemblée nationale et du Sénat, vote les lois en France."},
+  {q:"Brigitte Bardot fut :",opts:["Une actrice de cinéma","La créatrice d'une maison de couture","La première femme championne de boxe"],a:0,theme:"culture",feedback:"Brigitte Bardot est une actrice française mondialement connue, symbole des années 1960."},
+  {q:"Auguste Rodin était :",opts:["Un homme politique","Un chanteur","Un sculpteur"],a:2,theme:"culture",feedback:"Auguste Rodin (1840–1917) est l'un des plus grands sculpteurs français, auteur du « Penseur »."},
+  {q:"L'Hôtel de Ville, c'est aussi :",opts:["La mairie","L'auberge","L'Assemblée nationale"],a:0,theme:"institutions",feedback:"En France, l'Hôtel de Ville désigne le bâtiment de la mairie d'une commune."},
+  {q:"Les « Trois Mousquetaires » est un roman :",opts:["Du cardinal de Richelieu","D'Alexandre Dumas","De Marcel Proust"],a:1,theme:"culture",feedback:"Alexandre Dumas publia ce roman d'aventures en 1844. Richelieu y est un personnage, pas l'auteur !"},
+  {q:"Molière a écrit :",opts:["Des pièces de théâtre","Des livres de jardinage","Des romans policiers"],a:0,theme:"culture",feedback:"Molière (1622–1673) est le grand dramaturge de la comédie française : Le Misanthrope, Tartuffe, etc."},
+  {q:"De ces trois personnalités, laquelle n'est PAS un chanteur ?",opts:["Claude François","Michel Platini","Charles Trénet"],a:1,theme:"culture",feedback:"Michel Platini est un footballeur international. Cloclo et Trénet sont des icônes de la chanson française."},
+  {q:"Les femmes peuvent voter :",opts:["Depuis la Révolution française","Depuis 1944","Depuis 2001"],a:1,theme:"institutions",feedback:"Le droit de vote des femmes en France a été accordé par ordonnance du 21 avril 1944."},
+  {q:"Lequel de ces pays n'a PAS fait partie de l'Empire colonial français ?",opts:["La Tunisie","Le Maroc","La Libye"],a:2,theme:"histoire",feedback:"La Libye fut une colonie italienne. La Tunisie et le Maroc furent des protectorats français."},
+  {q:"Les premiers peuples connus qui ont habité la France sont :",opts:["Les Crétois","Les Gaulois","Les François"],a:1,theme:"histoire",feedback:"Les Gaulois, peuple celte, sont considérés comme les premiers grands habitants de ce qui est aujourd'hui la France."},
+  {q:"À quel homme politique se rattache la création de l'école publique, gratuite et obligatoire ?",opts:["Jules Ferry","Luc Ferry","Jules Grévy"],a:0,theme:"institutions",feedback:"Jules Ferry a instauré dans les années 1880 l'école laïque, gratuite et obligatoire."},
+  {q:"Un pays dirigé par un roi est :",opts:["Une monarchie","Une république","Une province"],a:0,theme:"institutions",feedback:"Une monarchie est un régime dirigé par un roi ou une reine. La France est une République depuis 1792."},
+  {q:"En France, le catholicisme est :",opts:["Une religion officielle","Une religion parmi d'autres","Une religion interdite"],a:1,theme:"institutions",feedback:"La France est un État laïc : il n'y a pas de religion officielle. La loi de 1905 sépare l'Église et l'État."},
+  {q:"Le point culminant en France est :",opts:["Le Mont Blanc","Le Pic de Vignemale","Le Kilimandjaro"],a:0,theme:"geo",feedback:"Le Mont Blanc (4 808 m) est le point le plus haut de France et d'Europe occidentale."},
+  {q:"Laquelle de ces îles n'est PAS dans les Antilles françaises ?",opts:["La Martinique","Haïti","La Guadeloupe"],a:1,theme:"geo",feedback:"Haïti est un État indépendant. La Martinique et la Guadeloupe sont des départements français d'outre-mer."},
+  {q:"Lequel de ces fleuves coule en France ?",opts:["Le Nil","La Loire","Le Danube"],a:1,theme:"geo",feedback:"La Loire est le plus long fleuve de France (1 006 km). Le Nil est en Afrique, le Danube en Europe centrale."},
+  {q:"Lequel de ces mots n'est PAS dans la devise de la République ?",opts:["Égalité","Liberté","Indépendance"],a:2,theme:"institutions",feedback:"La devise de la République française est « Liberté, Égalité, Fraternité »."},
+  {q:"Michel Platini est connu pour avoir joué :",opts:["Du violon","Au football","Aux échecs"],a:1,theme:"culture",feedback:"Michel Platini est une légende du football français, triple Ballon d'Or dans les années 1980."},
+  {q:"Le Parlement européen siège à :",opts:["Luxembourg","Cracovie","Strasbourg"],a:2,theme:"institutions",feedback:"Le Parlement européen a son siège officiel à Strasbourg, en France."},
+  {q:"L'école en France est obligatoire à l'âge de :",opts:["Trois ans","Six ans","Dix ans"],a:1,theme:"institutions",feedback:"La scolarité est obligatoire de 6 à 16 ans. Depuis 2019, l'instruction est obligatoire dès 3 ans."},
+  {q:"Pour pouvoir voter aux élections nationales, il faut :",opts:["Être français","Appartenir à un parti politique","Payer l'impôt sur le revenu"],a:0,theme:"institutions",feedback:"Seuls les citoyens français (majeurs) peuvent voter aux élections nationales."},
+  {q:"Le Tour de France est :",opts:["Une épreuve cycliste","Un bâtiment","Une compétition de pétanque"],a:0,theme:"culture",feedback:"Le Tour de France est la plus célèbre course cycliste par étapes au monde, organisée chaque été."},
+  {q:"La Grotte de Lascaux contient :",opts:["Une église souterraine","Des peintures préhistoriques","Des installations militaires"],a:1,theme:"histoire",feedback:"La grotte de Lascaux (Dordogne) abrite des peintures rupestres vieilles d'environ 17 000 ans."},
+  {q:"Le drapeau français possède :",opts:["Trois couleurs","Une couleur et dix étoiles","Deux couleurs"],a:0,theme:"institutions",feedback:"Le drapeau tricolore bleu, blanc, rouge a été adopté à la Révolution française."},
+  {q:"Édith Piaf était :",opts:["Une chanteuse","Une championne de cyclisme","Une spécialiste des oiseaux"],a:0,theme:"culture",feedback:"Édith Piaf (1915–1963) est l'une des chanteuses françaises les plus célèbres dans le monde."},
+  {q:"Quelle est la date de la fête nationale française ?",opts:["4 juillet","14 juillet","4 août"],a:1,theme:"institutions",feedback:"Le 14 juillet commémore la prise de la Bastille (1789). C'est la fête nationale depuis 1880."},
+  {q:"Jusqu'à quel âge la scolarisation d'un enfant est-elle obligatoire ?",opts:["12 ans","14 ans","16 ans"],a:2,theme:"institutions",feedback:"La scolarité est obligatoire jusqu'à 16 ans en France."},
+  {q:"Le régime politique de la France est :",opts:["Une monarchie constitutionnelle","Une République à régime semi-présidentiel","Une monarchie absolue"],a:1,theme:"institutions",feedback:"La Ve République est un régime semi-présidentiel : le pouvoir est partagé entre le Président et le Premier ministre."},
+  {q:"Le Gouvernement français est dirigé par :",opts:["Le président de la République","Le Premier ministre","Le président du Conseil"],a:1,theme:"institutions",feedback:"Le Premier ministre dirige le gouvernement et coordonne l'action des ministres."},
+  {q:"Laquelle de ces montagnes n'est PAS en France ?",opts:["Le Mont Blanc","Le Mont Zeppelin","Le Mont Canigou"],a:1,theme:"geo",feedback:"Le Mont Zeppelin se situe dans l'archipel du Svalbard, en Norvège, pas en France."},
+  {q:"Lequel de ces pays n'a PAS de frontière avec la France ?",opts:["La Belgique","Les Pays-Bas","L'Italie"],a:1,theme:"geo",feedback:"Les Pays-Bas ne partagent pas de frontière terrestre avec la France. La Belgique et l'Italie oui."},
+  {q:"À partir de quel âge a-t-on le droit de voter en France ?",opts:["16 ans","18 ans","21 ans"],a:1,theme:"institutions",feedback:"Le droit de vote est accordé à 18 ans en France depuis 1974."},
+  {q:"L'abolition de l'esclavage en France date de :",opts:["1848","1918","1968"],a:0,theme:"histoire",feedback:"L'esclavage a été définitivement aboli en France en 1848, sous la IIe République, grâce à Victor Schoelcher."},
+  {q:"Le gouvernement du Front populaire a été constitué :",opts:["en 1876","en 1916","en 1936"],a:2,theme:"histoire",feedback:"Le Front populaire, coalition de gauche menée par Léon Blum, est arrivé au pouvoir en 1936."},
+  {q:"Qui était Jean Moulin ?",opts:["Un chanteur de l'entre-deux-guerres","Un préfet entré dans la Résistance","Un ministre du général de Gaulle"],a:1,theme:"histoire",feedback:"Jean Moulin, préfet, devint le principal coordinateur de la Résistance intérieure française pendant la Seconde Guerre mondiale."},
+  {q:"La Constitution de la Ve République a été adoptée :",opts:["En 1918","En 1945","En 1958"],a:2,theme:"institutions",feedback:"La Constitution de la Ve République a été adoptée le 4 octobre 1958, lors du retour au pouvoir du général de Gaulle."},
+  {q:"Le président de la République française :",opts:["Est élu au suffrage universel","Est nommé par le chef du gouvernement","Est nommé par le Parlement réuni en congrès"],a:0,theme:"institutions",feedback:"Depuis 1962, le Président de la République est élu directement au suffrage universel direct."}
+];
+
+const THEME_LABELS={histoire:"Histoire",institutions:"Institutions",geo:"Géographie",culture:"Culture"};
+const THEME_CLASSES={histoire:"tag-histoire",institutions:"tag-institutions",geo:"tag-geo",culture:"tag-culture"};
+const LETTERS=["A","B","C"];
+
+let state={questions:[],current:0,answers:[],answered:false,done:false};
+
+function shuffle(arr){const a=[...arr];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+function init(){state={questions:shuffle(ALL_QUESTIONS),current:0,answers:[],answered:false,done:false};render();}
+
+function render(){
+  const app=document.getElementById('app');
+  if(state.done){renderResults(app);return;}
+  const q=state.questions[state.current];
+  const total=state.questions.length;
+  const pct=Math.round((state.current/total)*100);
+  const score=state.answers.filter(Boolean).length;
+  app.innerHTML=`
+    <div class="progress-wrap">
+      <div class="progress-top"><span class="progress-label">Progression</span><span class="progress-count">${state.current+1} / ${total}</span></div>
+      <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
+    </div>
+    <div class="card">
+      <span class="theme-tag ${THEME_CLASSES[q.theme]}">${THEME_LABELS[q.theme]}</span>
+      <div class="question-num">Question ${state.current+1}</div>
+      <div class="question-text">${q.q}</div>
+      <div class="options">${q.opts.map((o,i)=>`<button class="opt" data-i="${i}"><span class="opt-letter">${LETTERS[i]}</span>${o}</button>`).join('')}</div>
+      <div id="fz"></div>
+    </div>
+    <div class="nav"><span class="score-live"><strong>${score}</strong> bonne${score>1?'s':''} / ${state.current}</span><span id="nw"></span></div>`;
+  document.querySelectorAll('.opt').forEach(btn=>btn.addEventListener('click',()=>handleAnswer(parseInt(btn.dataset.i))));
+}
+
+function handleAnswer(chosen){
+  if(state.answered)return;
+  const q=state.questions[state.current];
+  const correct=chosen===q.a;
+  state.answers.push(correct);
+  state.answered=true;
+  document.querySelectorAll('.opt').forEach((btn,i)=>{
+    btn.disabled=true;
+    if(i===q.a)btn.classList.add(chosen===q.a?'correct':'reveal');
+    else if(i===chosen)btn.classList.add('wrong');
+  });
+  document.getElementById('fz').innerHTML=`<div class="feedback ${correct?'ok':'ko'}"><span class="feedback-icon">${correct?'✓':'✗'}</span><span>${q.feedback}</span></div>`;
+  const score=state.answers.filter(Boolean).length;
+  const total=state.questions.length;
+  document.querySelector('.score-live').innerHTML=`<strong>${score}</strong> bonne${score>1?'s':''} / ${state.current+1}`;
+  document.getElementById('nw').innerHTML=`<button class="btn-next" id="nb">${state.current+1<total?'Question suivante →':'Voir mes résultats →'}</button>`;
+  document.getElementById('nb').addEventListener('click',nextQ);
+}
+
+function nextQ(){
+  state.current++;state.answered=false;
+  if(state.current>=state.questions.length)state.done=true;
+  render();window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function renderResults(app){
+  const total=state.questions.length;
+  const score=state.answers.filter(Boolean).length;
+  const pct=Math.round((score/total)*100);
+  const ts={};
+  state.questions.forEach((q,i)=>{if(!ts[q.theme])ts[q.theme]={ok:0,total:0};ts[q.theme].total++;if(state.answers[i])ts[q.theme].ok++;});
+  let msg='';
+  if(pct>=85)msg="Félicitations ! Votre niveau est remarquable. Vous êtes prêt(e) pour la naturalisation !";
+  else if(pct>=60)msg="Bon résultat ! Quelques révisions vous permettront d'atteindre l'excellence.";
+  else if(pct>=40)msg="Des lacunes à combler. Revoyez l'histoire et les institutions françaises.";
+  else msg="Il reste du chemin à parcourir. La France n'a pas fini de vous surprendre !";
+  const bars=Object.entries(ts).map(([theme,s])=>{
+    const p=Math.round((s.ok/s.total)*100);
+    const col=p>=70?'#1D9E75':p>=40?'#F5A623':'#ED2939';
+    return `<div class="cat-row"><span class="cat-name">${THEME_LABELS[theme]}</span><div class="cat-track"><div class="cat-fill" style="width:${p}%;background:${col}"></div></div><span class="cat-score">${s.ok}/${s.total}</span></div>`;
+  }).join('');
+  app.innerHTML=`
+    <div class="results-hero">
+      <div class="results-hero-label">Votre résultat</div>
+      <div class="results-score">${score}<span>/${total}</span></div>
+      <div class="results-pct">${pct}% de bonnes réponses</div>
+      <div class="results-msg">${msg}</div>
+    </div>
+    <div class="stats-grid">
+      <div class="stat-box"><div class="stat-num">${score}</div><div class="stat-lbl">Correctes</div></div>
+      <div class="stat-box"><div class="stat-num">${total-score}</div><div class="stat-lbl">Incorrectes</div></div>
+      <div class="stat-box"><div class="stat-num">${pct}%</div><div class="stat-lbl">Score</div></div>
+    </div>
+    <div class="cat-card"><h3>Résultats par thème</h3>${bars}</div>
+    <button class="btn-restart" onclick="init()">Recommencer le quiz</button>`;
+}
+init();
+</script>
+</body>
+</html>
