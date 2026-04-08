@@ -14,10 +14,6 @@
     --rouge-clair: #FDECEE; --r: 14px;
   }
   body { font-family: 'DM Sans', sans-serif; background: var(--creme); color: var(--encre); min-height: 100vh; }
-  .bandeau { display: flex; height: 8px; }
-  .bandeau-bleu { background: var(--bleu); flex: 1; }
-  .bandeau-blanc { background: var(--blanc); flex: 1; border-left: 1px solid #e0ddd6; border-right: 1px solid #e0ddd6; }
-  .bandeau-rouge { background: var(--rouge); flex: 1; }
   .hero { background: var(--bleu); color: #fff; padding: 3rem 1.5rem 3.5rem; text-align: center; position: relative; overflow: hidden; }
   .hero::before { content: ''; position: absolute; top: -60px; right: -60px; width: 220px; height: 220px; border-radius: 50%; background: rgba(255,255,255,0.05); }
   .hero::after { content: ''; position: absolute; bottom: -80px; left: -40px; width: 280px; height: 280px; border-radius: 50%; background: rgba(237,41,57,0.12); }
@@ -87,15 +83,13 @@
 </style>
 </head>
 <body>
-<div class="bandeau"><div class="bandeau-bleu"></div><div class="bandeau-blanc"></div><div class="bandeau-rouge"></div></div>
 <div class="hero">
   <div class="hero-badge">Test de naturalisation</div>
-  <h1>Seriez-vous prêt·e<br>pour obtenir la<br><em>nationalité française</em> ?</h1>
+  <h1>Seriez-vous prêt·e pour obtenir<br>la <em>nationalité française</em> ?</h1>
   <p class="hero-sub">60 questions de culture générale issues des questionnaires officiels utilisés lors des tests de naturalisation (Source : GISTI).</p>
 </div>
 <div class="container"><div id="app"></div></div>
-<div class="bandeau"><div class="bandeau-bleu"></div><div class="bandeau-blanc"></div><div class="bandeau-rouge"></div></div>
-
+ 
 <script>
 const ALL_QUESTIONS=[
   {q:"À quelle période se rattache la construction du Château de Versailles ?",opts:["Celle de Napoléon","Celle de Louis XIV","Celle de Louis-Philippe"],a:1,theme:"histoire",feedback:"Versailles fut construit sous Louis XIV, le Roi-Soleil, au XVIIe siècle."},
