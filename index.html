@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -169,7 +170,7 @@ let state={questions:[],current:0,answers:[],answered:false,done:false};
 
 function shuffle(arr){const a=[...arr];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 
-function init(){state={questions:shuffle(ALL_QUESTIONS),current:0,answers:[],answered:false,done:false};render();}
+function init(){state={questions:shuffle(ALL_QUESTIONS).slice(0,15),current:0,answers:[],answered:false,done:false};render();}
 
 function render(){
   const app=document.getElementById('app');
