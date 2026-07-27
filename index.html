@@ -81,6 +81,7 @@
   .cat-score { font-size: 13px; font-weight: 500; color: var(--encre); width: 36px; text-align: right; flex-shrink: 0; }
   .btn-restart { display: block; width: 100%; background: var(--bleu); color: #fff; border: none; border-radius: 99px; padding: 15px; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 500; cursor: pointer; transition: background 0.15s; margin-top: 1rem; }
   .btn-restart:hover { background: #001A73; }
+  .replay-note { font-size: 13px; color: var(--gris); line-height: 1.55; text-align: center; margin-top: 1rem; }
 </style>
 </head>
 <body>
@@ -278,6 +279,7 @@ function renderResults(app){
       <div class="stat-box"><div class="stat-num">${pct}%</div><div class="stat-lbl">Score</div></div>
     </div>
     <div class="cat-card"><h3>Résultats par thème</h3>${bars}</div>
+    <p class="replay-note">Ces 15 questions ont été choisies aléatoirement parmi une liste de 100 questions issues des tests officiels. N'hésitez pas à recommencer pour tester vos connaissances sur différentes questions !</p>
     <button class="btn-restart" onclick="init()">Recommencer le quiz</button>`;
 }
 init();
